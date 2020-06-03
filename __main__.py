@@ -2,6 +2,7 @@ import curses
 import string
 import argparse
 import atexit
+import sys
 from twist_api import download, stream, get_num_episodes, get_shows
 
 def init_window():
@@ -142,12 +143,12 @@ def main(screen: curses.window):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Download/Stream anime from twist.moe')
-    parser.add_argument("-d", "--download", nargs='*', help="Download from twist.moe url. Ex: https://twist.moe/a/hataraku-maou-sama/5")
-    parser.add_argument("-s", "--stream", nargs='*', help="Stream from twist.moe url with mplayer")
+    parser.add_argument("--download", "-d", nargs='*', help="Download from twist.moe url. Ex: https://twist.moe/a/hataraku-maou-sama/5")
+    parser.add_argument("--stream", "-s", nargs='*', help="Stream from twist.moe url with mplayer")
     parsed = parser.parse_args()
     
     slug_to_show = {j: i for i, j in get_shows().items()}
-
+    
     if parsed.download is None and parsed.stream is None:
         screen = init_window()
         atexit.register(exit_window, screen)
