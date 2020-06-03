@@ -39,28 +39,28 @@ def get_num_episodes(slug):
     sources = api_request(f"/anime/{slug}/sources")
     return len(sources)
 
-def download(slug, ep_numbers, out=None):
-    for ep in ep_numbers:
-        out = out if out else f"{slug}-{ep}.mp4"
-        print(f"Downloading episode {ep} to {out}...")
-        url = get_source(slug, ep)
+def download(slug, show, ep, out=None):
+    out = out if out else f"{slug}-{ep}.mp4"
+    url = get_source(slug, ep)
 
-        r = requests.get(
-            url,
-            headers={
-                "Referer": "https://twist.moe/"
-            },
-            stream=True
-        )
-        r.raise_for_status()
-        
-        with open(out, "wb") as f:
+    r = requests.get(
+        url,
+        headers={
+            "Referer": "https://twist.moe/"
+        },
+        stream=True
+    )
+    r.raise_for_status()
+    
+    with open(out, "wb") as f:
+        try:
             for chunk in tqdm(r.iter_content(), total=int(r.headers["Content-Length"]), unit="B", unit_scale=True):
                 f.write(chunk)
+        except KeyboardInterrupt:
+            return True
     
-    print("Finished!")
 
-def stream(slug, ep_number):
+def stream(slug, show, ep_number):
     killed_by_ctrl_c = False
     url = get_source(slug, ep_number)
 
@@ -81,9 +81,9 @@ def stream(slug, ep_number):
         killed_by_ctrl_c = True
     except KeyboardInterrupt:
         killed_by_ctrl_c = True
-    except Exception as e:
+    except BrokenPipeError:
         pass
-
+    
     p.kill()
     
     return killed_by_ctrl_c

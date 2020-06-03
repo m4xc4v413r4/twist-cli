@@ -1,5 +1,6 @@
 import curses
 import string
+import signal
 import argparse
 import atexit
 from twist_api import download, stream, get_num_episodes, get_shows
@@ -17,11 +18,6 @@ def exit_window(screen):
     screen.keypad(False)
     curses.endwin()
 
-def parse_twist_url(url):
-    slug, ep_number = tuple(url[20:].split("/"))
-    ep_number = int(ep_number)
-    return slug, ep_number
-
 def stream_menu(screen: curses.window, show, slug, num_episodes):
     selected_index = 0
     playing_index = None
@@ -34,7 +30,7 @@ def stream_menu(screen: curses.window, show, slug, num_episodes):
         screen.addstr(1, 0, f"{show}:", curses.A_BOLD)
         max_index = shift + ymax - 1
         num_lines = min(num_episodes, ymax-2)
-
+        
         for i in range(num_lines):
             try:
                 if i == selected_index:
@@ -146,22 +142,7 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--stream", nargs='*', help="Stream from twist.moe url with mplayer")
     parsed = parser.parse_args()
     
-    slug_to_show = {j: i for i, j in get_shows().items()}
-
     if parsed.download is None and parsed.stream is None:
         screen = init_window()
         atexit.register(exit_window, screen)
         main(screen)
-    else:
-        if parsed.download:
-            for url in parsed.download:
-                slug, ep = parse_twist_url(url)
-                show = slug_to_show[slug]
-                print(f"Downloading episode {ep} of {show} to {slug}-{ep}.mp4")
-                download(slug, show, ep)
-        if parsed.stream:
-            for url in parsed.stream:
-                slug, ep = parse_twist_url(url)
-                show = slug_to_show[slug]
-                print(f"Streaming episode {ep} of {show}...")
-                stream(slug, ep)
