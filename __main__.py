@@ -143,13 +143,13 @@ def main(screen: curses.window):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Download/Stream anime from twist.moe')
-    parser.add_argument("--download", "-d", nargs='*', help="Download from twist.moe url. Ex: https://twist.moe/a/hataraku-maou-sama/5")
+    parser.add_argument("--download", "-d", nargs='*', help="Download from twist.moe url")
     parser.add_argument("--stream", "-s", nargs='*', help="Stream from twist.moe url with mplayer")
     parsed = parser.parse_args()
     
     slug_to_show = {j: i for i, j in get_shows().items()}
     
-    if parsed.download is None and parsed.stream is None:
+    if len(sys.argv) == 1:
         screen = init_window()
         atexit.register(exit_window, screen)
         main(screen)
