@@ -158,7 +158,7 @@ if __name__ == "__main__":
                 slug, ep = parse_twist_url(url)
                 show = slug_to_show[slug]
                 print(f"Downloading episode {ep} of {show} to {slug}-{ep}.mp4")
-                download(slug, show, ep)
+                download(slug, ep)
         if parsed.stream:
             for url in parsed.stream:
                 slug, ep = parse_twist_url(url)

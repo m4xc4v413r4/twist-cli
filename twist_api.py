@@ -39,7 +39,7 @@ def get_num_episodes(slug):
     sources = api_request(f"/anime/{slug}/sources")
     return len(sources)
 
-def download(slug, show, ep, out=None):
+def download(slug, ep, out=None):
     out = out if out else f"{slug}-{ep}.mp4"
     url = get_source(slug, ep)
 
@@ -60,7 +60,7 @@ def download(slug, show, ep, out=None):
             return True
     
 
-def stream(slug, show, ep_number):
+def stream(slug, ep_number):
     killed_by_ctrl_c = False
     url = get_source(slug, ep_number)
 
