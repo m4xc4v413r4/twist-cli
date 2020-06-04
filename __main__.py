@@ -28,7 +28,7 @@ def stream_menu(screen: curses.window, show, slug, num_episodes):
     playing_index = None
     shift = 0
     ymax, xmax = screen.getmaxyx()
-
+    
     while True:
         screen.clear()
         screen.addstr(0, 0, f"Starting episode? {selected_index + 1 + shift}")
