@@ -21,13 +21,25 @@ def api_request(url):
     r.raise_for_status()
     return r.json()
 
-def get_shows():
+def get_show_to_slug():
     shows_json = api_request("/anime")
-    shows = {
+    shows_jp = {
         i["title"]: i["slug"]["slug"] for i in shows_json
     }
 
-    return shows
+    return shows_jp
+
+def get_title_translations():
+    shows_json = api_request("/anime")
+    translation = {
+        i["title"]: i["alt_title"] for i in shows_json
+    }
+
+    for title in translation:
+        if translation[title] is None:
+            translation[title] = title
+
+    return translation
 
 def get_source(slug, ep_number):
     sources = api_request(f"/anime/{slug}/sources")

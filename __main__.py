@@ -3,7 +3,7 @@ import string
 import argparse
 import atexit
 import sys
-from twist_api import download, stream, get_num_episodes, get_shows
+from twist_api import download, stream, get_num_episodes, get_show_to_slug, get_title_translations
 
 def init_window():
     screen = curses.initscr()
@@ -77,17 +77,23 @@ def start_stream(screen: curses.window, slug, ep_start, num_episodes):
 
 def main(screen: curses.window):
     curses.curs_set(0)
+    screen.clear()
+    screen.addstr(0, 0, "Loading...")
+    screen.refresh()
     search_term = ""
     selected_index = 0
     shift = 0
+    switch_lang = False
     ymax, xmax = screen.getmaxyx()
-    shows = get_shows()
+    show_to_slug = get_show_to_slug()
+    translations = get_title_translations()
 
     while True:
+        shows = translations.values() if switch_lang else translations.keys()
         screen.clear()
         screen.addstr(0, 0, "Search: "+search_term, curses.A_BOLD)
         max_index = shift+ymax-2
-        matches = list(filter(lambda i: search_term.lower() in i.lower(), shows.keys()))
+        matches = list(filter(lambda i: search_term.lower() in i.lower(), shows))
         visible_matches = list(enumerate(matches[shift:max_index+1]))
         max_selection = len(visible_matches) - 1
 
@@ -125,9 +131,11 @@ def main(screen: curses.window):
                 selected_index += 1
             elif max_index+1 < len(matches):
                 shift += 1
+        elif c in (curses.KEY_LEFT, curses.KEY_RIGHT):
+            switch_lang = not switch_lang
         elif c in (10, curses.KEY_ENTER):
             _, show = visible_matches[selected_index]
-            slug = shows[show]
+            slug = show_to_slug[show]
             num_episodes = get_num_episodes(slug)
             if stream_menu(screen, show, slug, num_episodes):
                 break
@@ -147,7 +155,7 @@ if __name__ == "__main__":
     parser.add_argument("--stream", "-s", nargs='*', help="Stream from twist.moe url with mplayer")
     parsed = parser.parse_args()
     
-    slug_to_show = {j: i for i, j in get_shows().items()}
+    slug_to_show = {j: i for i, j in get_show_to_slug().items()}
     
     if len(sys.argv) == 1:
         screen = init_window()
