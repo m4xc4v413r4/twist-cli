@@ -39,6 +39,10 @@ def get_title_translations():
         if translation[title] is None:
             translation[title] = title
 
+    translation = {
+        translation[x]: x for x in translation
+    }
+
     return translation
 
 def get_source(slug, ep_number):

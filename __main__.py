@@ -89,7 +89,7 @@ def main(screen: curses.window):
     translations = get_title_translations()
 
     while True:
-        shows = translations.values() if switch_lang else translations.keys()
+        shows = translations.keys() if switch_lang else translations.values()
         screen.clear()
         screen.addstr(0, 0, "Search: "+search_term, curses.A_BOLD)
         max_index = shift+ymax-2
@@ -135,6 +135,10 @@ def main(screen: curses.window):
             switch_lang = not switch_lang
         elif c in (10, curses.KEY_ENTER):
             _, show = visible_matches[selected_index]
+
+            if switch_lang:
+                show = translations[show]
+            
             slug = show_to_slug[show]
             num_episodes = get_num_episodes(slug)
             if stream_menu(screen, show, slug, num_episodes):
