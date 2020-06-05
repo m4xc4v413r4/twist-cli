@@ -56,7 +56,7 @@ def stream_menu(screen: curses.window, show, slug, num_episodes):
             elif shift > 0:
                 shift -= 1 
         elif c == curses.KEY_DOWN:
-            if selected_index < ymax - 3:
+            if selected_index < num_lines - 1:
                 selected_index += 1
             elif max_index < num_episodes:
                 shift += 1
@@ -138,7 +138,7 @@ def main(screen: curses.window):
 
             if switch_lang:
                 show = translations[show]
-            
+
             slug = show_to_slug[show]
             num_episodes = get_num_episodes(slug)
             if stream_menu(screen, show, slug, num_episodes):
