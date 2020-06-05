@@ -58,7 +58,7 @@ def stream_menu(screen: curses.window, show, slug, num_episodes):
         elif c == curses.KEY_DOWN:
             if selected_index < num_lines - 1:
                 selected_index += 1
-            elif max_index < num_episodes:
+            elif max_index <= num_episodes:
                 shift += 1
         elif c in (10, curses.KEY_ENTER):
             start_stream(screen, slug, selected_index + 1 + shift, num_episodes)
