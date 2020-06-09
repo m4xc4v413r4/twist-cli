@@ -18,10 +18,14 @@ def exit_window(screen):
     screen.keypad(False)
     curses.endwin()
 
-def parse_twist_url(url):
-    slug, ep_number = tuple(url[20:].split("/"))
-    ep_number = int(ep_number)
-    return slug, ep_number
+def parse_twist_url(url, with_ep=True):
+    if with_ep:
+        slug, ep_number = tuple(url[20:].split("/"))
+        ep_number = int(ep_number)
+        return slug, ep_number
+    else:
+        slug = url[20:].split("/")[0]
+        return slug
 
 def stream_menu(screen: curses.window, show, slug, num_episodes):
     selected_index = 0
@@ -157,6 +161,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Download/Stream anime from twist.moe')
     parser.add_argument("--download", "-d", nargs='*', help="Download from twist.moe url")
     parser.add_argument("--stream", "-s", nargs='*', help="Stream from twist.moe url with mplayer")
+    parser.add_argument("--download-show", "-w", nargs='*', help="Download all episodes of show from twist.moe url")
     parsed = parser.parse_args()
     
     slug_to_show = {j: i for i, j in get_show_to_slug().items()}
@@ -178,3 +183,12 @@ if __name__ == "__main__":
                 show = slug_to_show[slug]
                 print(f"Streaming episode {ep} of {show}...")
                 stream(slug, ep)
+        if parsed.download_show:
+            for url in parsed.download_show:
+                slug = parse_twist_url(url, with_ep=False)
+                show = slug_to_show[slug]
+                num_eps = get_num_episodes(slug)
+
+                for i in range(1, num_eps+1):
+                    print(f"Downloading episode {i} of {show} to {slug}-{i}.mp4")
+                    download(slug, i)
