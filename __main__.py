@@ -27,7 +27,7 @@ def parse_twist_url(url, with_ep=True):
         slug = url[20:].split("/")[0]
         return slug
 
-def stream_menu(screen: curses.window, show, slug, num_episodes):
+def stream_menu(screen, show, slug, num_episodes):
     selected_index = 0
     playing_index = None
     shift = 0
@@ -71,7 +71,7 @@ def stream_menu(screen: curses.window, show, slug, num_episodes):
 
         screen.refresh()
 
-def start_stream(screen: curses.window, slug, ep_start, num_episodes):
+def start_stream(screen, slug, ep_start, num_episodes):
     for i in range(ep_start, num_episodes+1):
         screen.clear()
         screen.addstr(0, 0, f"Playing episode {i}, press Ctrl+C to quit\n")
@@ -79,7 +79,7 @@ def start_stream(screen: curses.window, slug, ep_start, num_episodes):
         if stream(slug, i):
             quit()
 
-def main(screen: curses.window):
+def main(screen):
     curses.curs_set(0)
     screen.clear()
     screen.addstr(0, 0, "Loading...")
