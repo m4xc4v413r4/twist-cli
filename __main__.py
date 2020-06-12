@@ -3,6 +3,7 @@ import string
 import argparse
 import atexit
 import sys
+import time
 from twist_api import download, stream, get_num_episodes, get_show_to_slug, get_title_translations
 
 def init_window():
@@ -66,18 +67,29 @@ def stream_menu(screen, show, slug, num_episodes):
                 shift += 1
         elif c in (10, curses.KEY_ENTER):
             start_stream(screen, slug, selected_index + 1 + shift, num_episodes)
-        elif chr(c) == "b":
+        elif chr(c) in ["b", "B"]:
             return False
 
         screen.refresh()
 
 def start_stream(screen, slug, ep_start, num_episodes):
-    for i in range(ep_start, num_episodes+1):
+    i = ep_start
+    while i <= num_episodes:
         screen.clear()
         screen.addstr(0, 0, f"Playing episode {i}, press Ctrl+C to quit\n")
         screen.refresh()
         if stream(slug, i):
             quit()
+        
+        time.sleep(1)
+        screen.addstr(1, 0, "Rewatch? (y/n/b) [n]")
+        screen.refresh()
+        c = chr(screen.getch())
+
+        if c in ("n", "N") or c in ("\n", curses.KEY_ENTER):
+            i += 1
+        elif c in ("b", "B"):
+            return
 
 def main(screen):
     curses.curs_set(0)
