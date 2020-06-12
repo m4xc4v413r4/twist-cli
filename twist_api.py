@@ -88,7 +88,7 @@ def stream(slug, ep_number):
         stream=True
     )
     r.raise_for_status()
-    p = subprocess.Popen(["mpv", "-cache", "--force-seekable=yes", "-"], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    p = subprocess.Popen(["mplayer", "-cache", "32768", "-"], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     try:
         for chunk in r.iter_content(32768):
